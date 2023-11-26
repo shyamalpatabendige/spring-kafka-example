@@ -1,0 +1,47 @@
+
+# Common properties spring
+server:
+  port: 8080
+
+
+spring:
+  kafka:
+    # Kafka Producer properties
+    producer:
+      bootstrap-servers: 127.0.0.1:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      group-id: group_id
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/compose-postgres
+    username: compose-postgres-usr
+    password: compose-postgres-pwd
+    testOnBorrow: true
+    testWhileIdle: true
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 30000
+    validationQuery: SELECT 1
+    max-active: 15
+    max-idle: 10
+    max-wait: 8000
+
+#below needed for migrate using flyway plugin
+flyway:
+  url: jdbc:postgresql://localhost:5432/compose-postgres
+  schemas: compose-postgres #this property specifies the schemas that Flyway should manage. You can specify a single schema or multiple schemas separated by commas.
+  user: "compose-postgres-usr"
+  password: "compose-postgres-pwd"
+#  baselineOnMigrate: true #Flyway will automatically create the baseline for your database when you run the migration. This is useful if you are starting from scratch and don't have any existing database.
+#  flyway.locations: classpath:db/migration #this property specifies the locations where Flyway should look for the migration scripts. By default, Flyway will look for them in the classpath:db/migration directory, but you can specify a different location if needed.
+
+  # Topic name
+topic:
+  name:
+    producer: topico.teste
+
+  # Common Kafka Properties
+auto:
+  create:
+    topics:
+      enable: true
