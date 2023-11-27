@@ -80,6 +80,7 @@ services:
     container_name: postgres-db
     ports:
       - 5432:5432
+# mount /var/lib/postgresql/data from inside its container to local directory (./pgdata) and persist
     volumes:
       - ./pgdata:/var/lib/postgresql/data
     environment:

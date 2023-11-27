@@ -29,6 +29,11 @@ docker-compose ps
 ```shell
 docker logs create-kafka-topics
 ```
+#### Start Application
+```shell
+./gradlew bootRun
+```
+
 <details open>
   <summary> Query PostgreSQL</summary>
 
