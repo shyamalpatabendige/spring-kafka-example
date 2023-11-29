@@ -8,6 +8,7 @@ import org.springframework.web.servlet.ModelAndView;
 public class RedirectController {
     @GetMapping(value = {"/api-docs", "/swagger-ui.html"})
     public ModelAndView redirectToApiPage() {
+
         return new ModelAndView("redirect:/swagger-ui/index.html");
     }
 }

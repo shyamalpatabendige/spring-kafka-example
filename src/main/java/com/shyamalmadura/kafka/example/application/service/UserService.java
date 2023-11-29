@@ -17,7 +17,7 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    public void save(User user) {
+    public void save(final User user) {
         log.info("Saving user with id = {}", user.getUuid());
         UserEntity userEntity = UserEntity.builder()
                 .id(user.getUuid())
@@ -27,7 +27,7 @@ public class UserService {
         userRepository.save(userEntity);
     }
 
-    public List<User> getUsers(String firstName) {
+    public List<User> getUsers(final String firstName) {
         List<UserEntity> userEntities = userRepository.getByFirstNameIgnoreCaseOrderByFirstNameAscLastNameAsc(firstName);
         return userEntities.stream()
                 .map(e ->  User.builder()

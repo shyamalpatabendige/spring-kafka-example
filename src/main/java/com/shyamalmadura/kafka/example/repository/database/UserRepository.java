@@ -9,6 +9,6 @@ import java.util.List;
 @Repository
 public interface UserRepository extends JpaRepository<UserEntity, String> {
 
-    List<UserEntity> getByFirstNameIgnoreCaseOrderByFirstNameAscLastNameAsc(String firstName);
+    List<UserEntity> getByFirstNameIgnoreCaseOrderByFirstNameAscLastNameAsc(final String firstName);
 
 }

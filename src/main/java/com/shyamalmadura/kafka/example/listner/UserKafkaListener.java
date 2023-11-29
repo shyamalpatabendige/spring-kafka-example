@@ -1,4 +1,4 @@
-package com.shyamalmadura.kafka.example.consumer;
+package com.shyamalmadura.kafka.example.listner;
 
 import com.shyamalmadura.kafka.example.application.service.UserService;
 import com.shyamalmadura.kafka.example.dto.User;
@@ -13,13 +13,13 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class UserKafkaConsumer {
+public class UserKafkaListener {
 
     private final UserService userService;
 
-    @KafkaListener(topics = "${spring.kafka.topic.name}",
+    @KafkaListener(topics = "${spring.kafka.topics.user.details}",
             concurrency = "${spring.kafka.consumer.level.concurrency:3}")
-    public void logKafkaMessages(@Payload User user,
+    public void createUser(@Payload User user,
                                  @Header(KafkaHeaders.RECEIVED_TOPIC) String topic,
                                  @Header(KafkaHeaders.RECEIVED_PARTITION) Integer partition,
                                  @Header(KafkaHeaders.OFFSET) Long offset) {
