@@ -1,10 +1,18 @@
-
 # Common properties spring
 server:
   port: 8080
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+        #'*' # Enable all endpoints
+        # Or specify specific endpoints like:
+        # include: health,info,metrics
+
 spring:
-  kafka:
+  kafka: #https://docs.spring.io/spring-boot/docs/current/reference/html/application-properties.html#application-properties.integration.spring.kafka.admin.auto-create
     replication:
       factor: 3
     partition:
@@ -13,16 +21,20 @@ spring:
     producer:
       bootstrap-servers: 127.0.0.1:9092
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.value.default.type: com.shyamalmadura.kafka.example.dto.User
+    # Kafka Consumer properties
     consumer:
       bootstrap-servers: 127.0.0.1:9092
-      group-id: kafka-user-listener
+      group-id: spring-kafka-example-app
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
         spring.json.value.default.type: com.shyamalmadura.kafka.example.dto.User
     listener:
+      auto-startup: true
       missing-topics-fatal: true  # Throw an exception for missing topics in the configuration
       ack-mode: record  # Acknowledgment mode for listener (record, batch, or manual)
       concurrency: 3  # Number of threads to process Kafka messages
