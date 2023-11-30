@@ -1,6 +1,6 @@
 package com.shyamalmadura.kafka.example.application.service;
 
-import com.shyamalmadura.kafka.example.dto.User;
+import com.shyamalmadura.kafka.example.application.dto.User;
 import com.shyamalmadura.kafka.example.repository.database.UserRepository;
 import com.shyamalmadura.kafka.example.repository.database.entity.UserEntity;
 import lombok.RequiredArgsConstructor;

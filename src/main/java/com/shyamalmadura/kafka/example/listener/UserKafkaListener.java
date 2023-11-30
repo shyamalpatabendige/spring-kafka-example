@@ -1,7 +1,7 @@
-package com.shyamalmadura.kafka.example.listner;
+package com.shyamalmadura.kafka.example.listener;
 
+import com.shyamalmadura.kafka.example.application.dto.User;
 import com.shyamalmadura.kafka.example.application.service.UserService;
-import com.shyamalmadura.kafka.example.dto.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;

@@ -4,6 +4,10 @@ server:
 
 management:
   endpoints:
+    health:
+      probes:
+        enabled: true
+      show-details: always
     web:
       exposure:
         include: health,info,metrics
@@ -12,6 +16,9 @@ management:
         # include: health,info,metrics
 
 spring:
+  mvc:
+    problemdetails:
+      enabled: true
   kafka: #https://docs.spring.io/spring-boot/docs/current/reference/html/application-properties.html#application-properties.integration.spring.kafka.admin.auto-create
     replication:
       factor: 3
@@ -23,7 +30,7 @@ spring:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       properties:
-        spring.json.value.default.type: com.shyamalmadura.kafka.example.dto.User
+        spring.json.value.default.type: com.shyamalmadura.kafka.example.application.dto.User
     # Kafka Consumer properties
     consumer:
       bootstrap-servers: 127.0.0.1:9092
@@ -32,7 +39,7 @@ spring:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
-        spring.json.value.default.type: com.shyamalmadura.kafka.example.dto.User
+        spring.json.value.default.type: com.shyamalmadura.kafka.example.application.dto.User
     listener:
       auto-startup: true
       missing-topics-fatal: true  # Throw an exception for missing topics in the configuration

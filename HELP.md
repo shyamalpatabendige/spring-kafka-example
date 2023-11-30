@@ -33,6 +33,12 @@ docker logs create-kafka-topics
 ```shell
 ./gradlew bootRun
 ```
+<details open>
+  <summary> Access Application </summary>
+* http://localhost:8080/api-docs
+* curl http://localhost:8080/actuator/metrics | jq
+* curl http://localhost:8080/actuator/metrics/by-name | jq
+</details>
 
 <details open>
   <summary> Query PostgreSQL</summary>

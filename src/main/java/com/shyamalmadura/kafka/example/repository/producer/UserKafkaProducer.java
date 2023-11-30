@@ -1,6 +1,6 @@
 package com.shyamalmadura.kafka.example.repository.producer;
 
-import com.shyamalmadura.kafka.example.dto.User;
+import com.shyamalmadura.kafka.example.application.dto.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
