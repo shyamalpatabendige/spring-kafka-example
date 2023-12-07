@@ -32,12 +32,15 @@ public class UserController {
 
     @GetMapping("/random")
     @Operation(summary = "Create a user", description = "Creates a random user and write it to Kafka which is consumed by the listener")
-    public void generateRandomUser() {
-        kafkaProducer.publish(
-                User.builder().uuid(UUID.randomUUID().toString())
-                        .firstName(faker.name().firstName())
-                        .lastName(faker.name().lastName())
-                        .build());
+    public User generateRandomUser() {
+        User user = User.builder().uuid(UUID.randomUUID().toString())
+                .firstName(faker.name().firstName())
+                .lastName(faker.name().lastName())
+                .build();
+        kafkaProducer.publish(user);
+        return Observation
+                .createNotStarted("by-user", observationRegistry)
+                .observe( () -> user);
     }
 
     @GetMapping("/{firstName}")

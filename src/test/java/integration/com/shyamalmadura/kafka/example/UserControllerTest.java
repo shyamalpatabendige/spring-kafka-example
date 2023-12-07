@@ -4,8 +4,6 @@ import com.github.javafaker.Faker;
 import com.shyamalmadura.kafka.example.Application;
 import com.shyamalmadura.kafka.example.application.dto.User;
 import com.shyamalmadura.kafka.example.application.service.UserService;
-import com.shyamalmadura.kafka.example.common.db.CommonKafkaContainer;
-import com.shyamalmadura.kafka.example.common.db.CommonPostgreSQLContainer;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.ClassRule;
@@ -16,14 +14,17 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.testcontainers.containers.PostgreSQLContainer;
+import testcontainer.com.shyamalmadura.kafka.example.CommonKafkaContainer;
+import testcontainer.com.shyamalmadura.kafka.example.CommonPostgreSQLContainer;
 
 import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.hasSize;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {Application.class})
@@ -55,20 +56,58 @@ public class UserControllerTest {
     }
 
     @Test
-    void shouldGetAllCustomers() {
+    void givenFirstName_whenUserExists_thenReturnUser() {
         User user = User.builder().uuid(UUID.randomUUID().toString())
-                        .firstName(faker.name().firstName())
-                        .lastName(faker.name().lastName())
-                        .build();
+                .firstName(faker.name().firstName())
+                .lastName(faker.name().lastName())
+                .build();
         userService.save(user);
 
-        given()
+        User[] users = given()
+                .contentType(ContentType.JSON)
+                .when()
+                .get("/v1/users/" + user.getFirstName())
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .extract()
+                .as(User[].class);
+
+        assertThat(users.length).isEqualTo(1);
+        assertThat(users).allSatisfy( u -> {
+           assertThat(u.getFirstName()).isEqualTo(user.getFirstName());
+           assertThat(u.getLastName()).isEqualTo(user.getLastName());
+           assertThat(u.getUuid()).isEqualTo(user.getUuid());
+        });
+    }
+
+    @Test
+    void givenUserCreated_whenKafkaPublishSuccess_thenReturnUser() {
+
+        User user = given()
+                .contentType(ContentType.JSON)
+                .when()
+                .get("/v1/users/random")
+                .then()
+                .statusCode(HttpStatus.OK.value())
+                .extract()
+                .as(User.class);
+
+
+        User[] users = given()
                 .contentType(ContentType.JSON)
                 .when()
                 .get("/v1/users/" + user.getFirstName())
                 .then()
                 .statusCode(200)
-                .body(".", hasSize(1));
+                .extract()
+                .as(User[].class);
+
+        assertThat(users.length).isEqualTo(1);
+        assertThat(users).allSatisfy( u -> {
+            assertThat(u.getFirstName()).isEqualTo(user.getFirstName());
+            assertThat(u.getLastName()).isEqualTo(user.getLastName());
+            assertThat(u.getUuid()).isEqualTo(user.getUuid());
+        });
     }
 
 

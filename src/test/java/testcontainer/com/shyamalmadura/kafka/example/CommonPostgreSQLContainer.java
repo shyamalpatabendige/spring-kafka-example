@@ -1,4 +1,4 @@
-package com.shyamalmadura.kafka.example.common.db;
+package testcontainer.com.shyamalmadura.kafka.example;
 
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
