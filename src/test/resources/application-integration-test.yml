@@ -1,0 +1,10 @@
+spring:
+  kafka:
+    listener:
+      missing-topics-fatal: false
+#    consumer:
+#      properties:
+#        allow.auto.create.topics: true
+
+# Common Kafka Properties
+auto.create.topics.enable: true

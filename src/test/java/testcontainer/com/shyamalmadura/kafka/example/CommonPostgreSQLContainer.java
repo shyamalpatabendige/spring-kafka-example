@@ -1,7 +1,5 @@
 package testcontainer.com.shyamalmadura.kafka.example;
 
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
 
 public class CommonPostgreSQLContainer extends PostgreSQLContainer<CommonPostgreSQLContainer> {
@@ -16,15 +14,9 @@ public class CommonPostgreSQLContainer extends PostgreSQLContainer<CommonPostgre
     public static CommonPostgreSQLContainer getInstance() {
         if (postgres == null) {
             postgres = new CommonPostgreSQLContainer();
+            postgres.start();
         }
         return postgres;
-    }
-
-    @DynamicPropertySource
-    static void configureProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgres::getJdbcUrl);
-        registry.add("spring.datasource.username", postgres::getUsername);
-        registry.add("spring.datasource.password", postgres::getPassword);
     }
 
     @Override

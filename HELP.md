@@ -33,8 +33,15 @@ docker logs create-kafka-topics
 ```shell
 ./gradlew bootRun
 ```
+
+#### Run Intergation Test with TestContainers
+```shell
+./gradlew test
+```
+
 <details open>
   <summary> Access Application </summary>
+
 * http://localhost:8080/api-docs
 * curl http://localhost:8080/actuator/metrics | jq
 * curl http://localhost:8080/actuator/metrics/by-name | jq
