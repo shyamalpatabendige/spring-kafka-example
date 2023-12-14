@@ -24,10 +24,11 @@ class UserRepositoryTest extends AbstractContainerLoader {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private Faker faker;
 
     @Test
     void givenValidUser_whenPersist_ReturnUser() {
-        Faker faker = new Faker();
 
         UserEntity user = UserEntity.builder()
                 .id(UUID.randomUUID().toString())
