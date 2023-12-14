@@ -1,16 +1,19 @@
-version: '3.7'
+version: '3.8'
 services:
   zookeeper:
-    image: confluentinc/cp-zookeeper:latest
+#    image: confluentinc/cp-zookeeper:latest
+    image: zookeeper:latest
     container_name: zookeeper
     ports:
       - "2181:2181"
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
-    healthcheck:
-      test: "echo stat | nc localhost $ZOOKEEPER_CLIENT_PORT"
-      start_period: 20s
+#    healthcheck:
+#      test: echo ruok | nc localhost 2181 | grep imok
+#      interval: 10s
+#      retries: 3
+#      timeout: 5s
 
   schema-registry:
     image: confluentinc/cp-schema-registry:latest
@@ -24,7 +27,7 @@ services:
       SCHEMA_REGISTRY_HOST_NAME: schema-registry
       SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: 'zookeeper:2181'
       SCHEMA_REGISTRY_LISTENERS: http://schema-registry:8081
-      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: PLAINTEXT://kafka-broker-1:9092,PLAINTEXT_INTERNAL://localhost:19092
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: PLAINTEXT://kafka-broker-1:19092,PLAINTEXT_INTERNAL://localhost:9092
       SCHEMA_REGISTRY_DEBUG: 'true'
 
   kafka-broker-1:
@@ -32,17 +35,18 @@ services:
     container_name: kafka-broker-1
     hostname: kafka-broker-1
     ports:
-      - "19092:19092"
+      - "9092:9092"
     depends_on:
       - zookeeper
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-broker-1:9092,PLAINTEXT_INTERNAL://localhost:19092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-broker-1:19092,PLAINTEXT_INTERNAL://localhost:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_SCHEMA_REGISTRY_URL: http://schema-registry:8081
     healthcheck:
-      test: [ "CMD", "nc", "-z", "localhost", "19092" ]
+      test: [ "CMD", "nc", "-z", "localhost", "9092" ]
       start_period: 20s
   kafdrop: #http://localhost:9000 gui console
     image: obsidiandynamics/kafdrop:latest
@@ -50,7 +54,7 @@ services:
     ports:
       - "9000:9000"
     environment:
-      KAFKA_BROKERCONNECT: "kafka-broker-1:9092"
+      KAFKA_BROKERCONNECT: "kafka-broker-1:19092"
     healthcheck:
       test: "curl -f kafdrop:9000/actuator/health || exit 1"
       start_period: 30s
@@ -65,14 +69,14 @@ services:
     command: |
       "
       # blocks until kafka is reachable
-      kafka-topics --bootstrap-server kafka-broker-1:9092 --list
+      kafka-topics --bootstrap-server kafka-broker-1:19092 --list
       
       echo -e 'Creating kafka topics'
-      kafka-topics --bootstrap-server kafka-broker-1:9092 --create --if-not-exists --topic my-topic-1 --replication-factor 1 --partitions 1
-      kafka-topics --bootstrap-server kafka-broker-1:9092 --create --if-not-exists --topic my-topic-2 --replication-factor 1 --partitions 1
+      kafka-topics --bootstrap-server kafka-broker-1:19092 --create --if-not-exists --topic my-topic-1 --replication-factor 1 --partitions 1
+      kafka-topics --bootstrap-server kafka-broker-1:19092 --create --if-not-exists --topic my-topic-2 --replication-factor 1 --partitions 1
       
       echo -e 'Successfully created the following topics:'
-      kafka-topics --bootstrap-server kafka-broker-1:9092 --list
+      kafka-topics --bootstrap-server kafka-broker-1:19092 --list
       "
 
   postgres-db:
@@ -80,6 +84,7 @@ services:
     container_name: postgres-db
     ports:
       - 5432:5432
+# mount /var/lib/postgresql/data from inside its container to local directory (./pgdata) and persist
     volumes:
       - ./pgdata:/var/lib/postgresql/data
     environment:

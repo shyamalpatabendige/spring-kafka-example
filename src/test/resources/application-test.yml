@@ -1,0 +1,10 @@
+#spring:
+#  datasource: #testcontainers are used
+#    driverClassName: org.h2.Driver
+#    url: jdbc:h2:file:~/testdb
+spring:
+  kafka:
+    listener:
+      missing-topics-fatal: false
+# Common Kafka Properties
+auto.create.topics.enable: true

@@ -1,17 +1,55 @@
-
-# Common properties spring
 server:
   port: 8080
 
+management:
+  endpoints:
+    health:
+      probes:
+        enabled: true
+      show-details: always
+    web:
+      exposure:
+        include: health,info,metrics
 
 spring:
-  kafka:
+  mvc:
+    problemdetails:
+      enabled: true
+  kafka: #https://docs.spring.io/spring-boot/docs/current/reference/html/application-properties.html#application-properties.integration.spring.kafka.admin.auto-create
+    replication:
+      factor: 3
+    partition:
+      number: 2
     # Kafka Producer properties
     producer:
       bootstrap-servers: 127.0.0.1:9092
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.apache.kafka.common.serialization.StringSerializer
-      group-id: group_id
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.value.default.type: com.shyamalmadura.kafka.example.application.dto.User
+    # Kafka Consumer properties
+    consumer:
+      bootstrap-servers: 127.0.0.1:9092
+      group-id: spring-kafka-example-app
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.value.default.type: com.shyamalmadura.kafka.example.application.dto.User
+    listener:
+      auto-startup: true
+      missing-topics-fatal: true  # Throw an exception for missing topics in the configuration
+      ack-mode: record  # Acknowledgment mode for listener (record, batch, or manual)
+      concurrency: 3  # Number of threads to process Kafka messages
+      type: SINGLE  # Listener type (BATCH or SINGLE)
+
+    topics:
+      user:
+        details: my-topic-1
+
+  jpa:
+    hibernate:
+      ddl-auto: none
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/compose-postgres
@@ -25,23 +63,24 @@ spring:
     max-active: 15
     max-idle: 10
     max-wait: 8000
+    hikari:
+      maxLifetime: 600000
+    initialization-mode: always
 
 #below needed for migrate using flyway plugin
 flyway:
-  url: jdbc:postgresql://localhost:5432/compose-postgres
+  enable: true
+  url: ${spring.datasource.url}
   schemas: compose-postgres #this property specifies the schemas that Flyway should manage. You can specify a single schema or multiple schemas separated by commas.
-  user: "compose-postgres-usr"
-  password: "compose-postgres-pwd"
+  user: ${spring.datasource.username}
+  password: ${spring.datasource.password}
 #  baselineOnMigrate: true #Flyway will automatically create the baseline for your database when you run the migration. This is useful if you are starting from scratch and don't have any existing database.
 #  flyway.locations: classpath:db/migration #this property specifies the locations where Flyway should look for the migration scripts. By default, Flyway will look for them in the classpath:db/migration directory, but you can specify a different location if needed.
 
-  # Topic name
-topic:
-  name:
-    producer: topico.teste
-
-  # Common Kafka Properties
-auto:
-  create:
-    topics:
-      enable: true
+springdoc:
+  swagger-ui:
+    path: /apidocs
+    # disable API documentation and Swagger-ui
+#    api-docs:
+#      enabled: false
+#  enabled: false
